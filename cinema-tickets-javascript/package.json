@@ -10,7 +10,7 @@
     "test:unit": "mocha --recursive test --exit",
     "test:coverage": "c8 --all npm run test:unit",
     "test:lint": "eslint .",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "devDependencies": {
     "@dwp/eslint-config-base": "^9.0.2",
