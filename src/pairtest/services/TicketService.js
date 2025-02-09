@@ -1,9 +1,9 @@
 import TicketTypeRequest from "../lib/TicketTypeRequest.js";
-// import InvalidPurchaseException from "./lib/InvalidPurchaseException.js";
+import PurchaseTicketsValidator from "../lib/validators/PurchaseTicketsValidator.js";
 
 export default class TicketService {
   // #accountId;
-  // #ticketTypeRequests;
+  #ticketTypeRequests;
 
   constructor(accountId, ticketTypeRequests) {
     if (!(ticketTypeRequests instanceof Array)) {
@@ -19,15 +19,40 @@ export default class TicketService {
     }
 
     // this.#accountId = accountId;
-    // this.ticketTypeRequests = ticketTypeRequests;
+    this.#ticketTypeRequests = ticketTypeRequests;
   }
 
-  // purchaseTickets() {
-  // TODO: use this.#accountId and this.#ticketTypeRequests
+  #getTotalNumberOfTickets() {
+    return this.#ticketTypeRequests.reduce(
+      (accumulator, ticketType) => accumulator + ticketType.getNoOfTickets(),
+      0,
+    );
+  }
 
-  // Validate
-  // Make Payment
-  // Reserve Seats
-  // Return confirmation
-  // }
+  #getIndividualTicketTotals() {
+    return this.#ticketTypeRequests.reduce((accumulator, ticket) => {
+      return Object.assign(accumulator, {
+        [ticket.getTicketType()]: ticket.getNoOfTickets(),
+      });
+    }, {});
+  }
+
+  async purchaseTickets() {
+    // TODO: use this.#accountId and this.#ticketTypeRequests
+
+    const totalNoOfTickets = this.#getTotalNumberOfTickets();
+    const ticketsOverview = this.#getIndividualTicketTotals();
+
+    // Validate
+    PurchaseTicketsValidator.validatePurchaseTicketsRequest(
+      totalNoOfTickets,
+      ticketsOverview,
+    );
+    // Make Payment
+    // Reserve Seats
+    return {
+      totalNoOfTickets,
+      ticketsOverview,
+    };
+  }
 }
