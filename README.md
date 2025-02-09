@@ -1,1 +1,1 @@
-# cinema-tickets
+# cinema-tickets-javascript
