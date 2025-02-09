@@ -1,11 +1,14 @@
+import { TICKET_TYPES, TICKET_PRICES } from "../../constants.js";
+
 export default class TicketTypeRequest {
   #type;
   #noOfTickets;
+  #price;
 
   constructor(type, noOfTickets) {
-    if (!this.#Type.includes(type)) {
+    if (!TICKET_TYPES.includes(type)) {
       throw new TypeError(
-        `Ticket type must be ${this.#Type.slice(0, -1).join(", ")}, or ${this.#Type.slice(-1)}`,
+        `Ticket type must be ${TICKET_TYPES.slice(0, -1).join(", ")}, or ${TICKET_TYPES.slice(-1)}`,
       );
     }
 
@@ -15,6 +18,7 @@ export default class TicketTypeRequest {
 
     this.#type = type;
     this.#noOfTickets = noOfTickets;
+    this.#price = TICKET_PRICES[type];
     Object.freeze(this);
   }
 
@@ -26,5 +30,7 @@ export default class TicketTypeRequest {
     return this.#type;
   }
 
-  #Type = ["ADULT", "CHILD", "INFANT"];
+  getTicketPrice() {
+    return this.#price;
+  }
 }

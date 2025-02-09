@@ -1,0 +1,8 @@
+const TICKET_TYPES = ["ADULT", "CHILD", "INFANT"];
+const TICKET_PRICES = {
+  ADULT: 25,
+  CHILD: 15,
+  INFANT: 0,
+};
+
+export { TICKET_TYPES, TICKET_PRICES };

@@ -44,4 +44,18 @@ describe("TicketTypeRequest", () => {
       );
     });
   });
+
+  context("getTicketPrice", () => {
+    it("should return adult ticket price", () => {
+      expect(new TicketTypeRequest("ADULT", 2).getTicketPrice()).to.be.eql(25);
+    });
+
+    it("should return child ticket price", () => {
+      expect(new TicketTypeRequest("CHILD", 1).getTicketPrice()).to.be.eql(15);
+    });
+
+    it("should return infant ticket price", () => {
+      expect(new TicketTypeRequest("INFANT", 1).getTicketPrice()).to.be.eql(0);
+    });
+  });
 });
