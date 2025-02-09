@@ -7,7 +7,7 @@ describe("TicketTypeRequest", () => {
     it("should throw an error for invalid ticket type", () => {
       assert.throws(
         () => new TicketTypeRequest("SENIOR", 1),
-        "type must be ADULT, CHILD, or INFANT"
+        "type must be ADULT, CHILD, or INFANT",
       );
     });
   });

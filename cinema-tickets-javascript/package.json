@@ -8,11 +8,14 @@
   "type": "module",
   "scripts": {
     "test:unit": "mocha --recursive test --exit",
-    "test:coverage": "c8 --all npm run test:unit"
+    "test:coverage": "c8 --all npm run test:unit",
+    "test:lint": "eslint ."
   },
   "devDependencies": {
+    "@dwp/eslint-config-base": "^9.0.2",
     "c8": "^10.1.3",
     "chai": "^5.1.2",
+    "eslint": "^9.20.0",
     "mocha": "^11.1.0",
     "sinon": "^19.0.2"
   }
