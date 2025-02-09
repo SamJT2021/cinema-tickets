@@ -1,9 +1,11 @@
 import InternalServerError from "../lib/errors/InternalServerError.js";
 import TicketTypeRequest from "../lib/TicketTypeRequest.js";
 import PurchaseTicketsValidator from "../lib/validators/PurchaseTicketsValidator.js";
+import TicketPaymentService from "../../thirdparty/paymentgateway/TicketPaymentService.js";
+import SeatReservationService from "../../thirdparty/seatbooking/SeatReservationService.js";
 
 export default class TicketService {
-  // #accountId;
+  #accountId;
   #ticketTypeRequests;
 
   constructor(accountId, ticketTypeRequests) {
@@ -19,7 +21,7 @@ export default class TicketService {
       );
     }
 
-    // this.#accountId = accountId;
+    this.#accountId = accountId;
     this.#ticketTypeRequests = ticketTypeRequests;
   }
 
@@ -68,8 +70,6 @@ export default class TicketService {
   }
 
   async purchaseTickets() {
-    // TODO: use this.#accountId and this.#ticketTypeRequests
-
     const totalNoOfTickets = this.#getTotalNumberOfTickets();
     const ticketsOverview = this.#getIndividualTicketTotals();
     const totalCost = this.#getTotalCost();
@@ -79,8 +79,12 @@ export default class TicketService {
       totalNoOfTickets,
       ticketsOverview,
     );
-    // Make Payment
-    // Reserve Seats
+
+    const ticketPaymentService = new TicketPaymentService();
+    const seatReservationService = new SeatReservationService();
+    await ticketPaymentService.makePayment(this.#accountId, totalCost);
+    await seatReservationService.reserveSeat(this.#accountId, totalSeats);
+
     return {
       totalNoOfTickets,
       ticketsOverview,

@@ -4,6 +4,8 @@ import sinon from "sinon";
 import TicketService from "../../src/pairtest/services/TicketService.js";
 import TicketTypeRequest from "../../src/pairtest/lib/TicketTypeRequest.js";
 import InternalServerError from "../../src/pairtest/lib/errors/InternalServerError.js";
+import TicketPaymentService from "../../src/thirdparty/paymentgateway/TicketPaymentService.js";
+import SeatReservationService from "../../src/thirdparty/seatbooking/SeatReservationService.js";
 
 const sandbox = sinon.createSandbox();
 
@@ -131,6 +133,37 @@ describe("TicketService", () => {
       const ticketService = new TicketService(accountId, tickets);
       const result = await ticketService.purchaseTickets();
       expect(result.totalSeats).to.be.eql(3);
+    });
+  });
+
+  context("purchaseTickets", () => {
+    let makePaymentStub;
+    let reserveSeatStub;
+
+    beforeEach(() => {
+      makePaymentStub = sandbox
+        .stub(TicketPaymentService.prototype, "makePayment")
+        .returns(true);
+      reserveSeatStub = sandbox
+        .stub(SeatReservationService.prototype, "reserveSeat")
+        .returns(true);
+    });
+
+    afterEach(() => {
+      sandbox.restore();
+    });
+
+    it("should make payment and seat reservation to thirdparty services", async () => {
+      const ticketService = new TicketService(accountId, tickets);
+      const result = await ticketService.purchaseTickets();
+      sandbox.assert.calledWithExactly(makePaymentStub, accountId, 65);
+      sandbox.assert.calledWithExactly(reserveSeatStub, accountId, 3);
+      expect(result).to.be.eql({
+        totalNoOfTickets: 4,
+        ticketsOverview: { ADULT: 2, CHILD: 1, INFANT: 1 },
+        totalCost: 65,
+        totalSeats: 3,
+      });
     });
   });
 });
