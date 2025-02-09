@@ -24,6 +24,10 @@ export default class TicketService {
 
   // purchaseTickets() {
   // TODO: use this.#accountId and this.#ticketTypeRequests
-  // throws InvalidPurchaseException
+
+  // Validate
+  // Make Payment
+  // Reserve Seats
+  // Return confirmation
   // }
 }
