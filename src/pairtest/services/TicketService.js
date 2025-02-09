@@ -58,14 +58,23 @@ export default class TicketService {
     return totalCost;
   }
 
+  #getTotalSeatsToReserve() {
+    return this.#ticketTypeRequests.reduce((accumulator, ticketType) => {
+      if (ticketType.getTicketType() !== "INFANT") {
+        return accumulator + ticketType.getNoOfTickets();
+      }
+      return accumulator;
+    }, 0);
+  }
+
   async purchaseTickets() {
     // TODO: use this.#accountId and this.#ticketTypeRequests
 
     const totalNoOfTickets = this.#getTotalNumberOfTickets();
     const ticketsOverview = this.#getIndividualTicketTotals();
     const totalCost = this.#getTotalCost();
+    const totalSeats = this.#getTotalSeatsToReserve();
 
-    // Validate
     PurchaseTicketsValidator.validatePurchaseTicketsRequest(
       totalNoOfTickets,
       ticketsOverview,
@@ -76,6 +85,7 @@ export default class TicketService {
       totalNoOfTickets,
       ticketsOverview,
       totalCost,
+      totalSeats,
     };
   }
 }

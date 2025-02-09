@@ -125,4 +125,12 @@ describe("TicketService", () => {
       });
     });
   });
+
+  context("#getTotalSeatsToReserve", async () => {
+    it("should calculate the total number of seats required", async () => {
+      const ticketService = new TicketService(accountId, tickets);
+      const result = await ticketService.purchaseTickets();
+      expect(result.totalSeats).to.be.eql(3);
+    });
+  });
 });
