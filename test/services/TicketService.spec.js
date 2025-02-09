@@ -1,7 +1,11 @@
 import { assert, expect } from "chai";
+import sinon from "sinon";
 
 import TicketService from "../../src/pairtest/services/TicketService.js";
 import TicketTypeRequest from "../../src/pairtest/lib/TicketTypeRequest.js";
+import InternalServerError from "../../src/pairtest/lib/errors/InternalServerError.js";
+
+const sandbox = sinon.createSandbox();
 
 describe("TicketService", () => {
   const accountId = 123456;
@@ -15,7 +19,7 @@ describe("TicketService", () => {
     it("should throw an error if tickets are not an Array", () => {
       assert.throws(() => {
         new TicketService(accountId, { ADULT: 2, CHILD: 1, INFANT: 1 }),
-          TypeError,
+          InternalServerError,
           "tickets must be an Array";
       });
     });
@@ -23,7 +27,7 @@ describe("TicketService", () => {
     it("should throw an error if each ticket is not and instance of TicketTypeRequest", () => {
       assert.throws(() => {
         new TicketService(accountId, [{ ADULT: 2, CHILD: 1, INFANT: 1 }]),
-          TypeError,
+          InternalServerError,
           "Each ticket must be an instance of TicketTypeRequest";
       });
     });
@@ -55,6 +59,69 @@ describe("TicketService", () => {
       const result = await ticketService.purchaseTickets();
       expect(result.ticketsOverview).to.be.eql({
         ADULT: 2,
+      });
+    });
+  });
+
+  context("#getTotalCost", () => {
+    it("should calculate the total cost of tickets", async () => {
+      const ticketService = new TicketService(accountId, tickets);
+      const result = await ticketService.purchaseTickets();
+      expect(result.totalCost).to.be.eql(65);
+    });
+
+    context("Error handling", () => {
+      let getTicketPriceStub;
+
+      beforeEach(() => {
+        getTicketPriceStub = sandbox.stub(
+          TicketTypeRequest.prototype,
+          "getTicketPrice",
+        );
+      });
+
+      afterEach(() => {
+        sandbox.restore();
+      });
+
+      it("should throw an error if total cost is not a number", async () => {
+        getTicketPriceStub.returns("test");
+        const ticketService = new TicketService(accountId, tickets);
+        try {
+          await ticketService.purchaseTickets();
+        } catch (error) {
+          expect(error).to.be.eql(
+            new InternalServerError("Total Cost must be a number"),
+          );
+        }
+      });
+
+      it("should throw an error if total cost is 0", async () => {
+        getTicketPriceStub.returns(0);
+        const ticketService = new TicketService(accountId, tickets);
+        try {
+          await ticketService.purchaseTickets();
+        } catch (error) {
+          expect(error).to.be.eql(
+            new InternalServerError(
+              "Total Cost cannot be less than or equal to 0",
+            ),
+          );
+        }
+      });
+
+      it("should throw an error if total cost is less than 0", async () => {
+        getTicketPriceStub.returns(-1);
+        const ticketService = new TicketService(accountId, tickets);
+        try {
+          await ticketService.purchaseTickets();
+        } catch (error) {
+          expect(error).to.be.eql(
+            new InternalServerError(
+              "Total Cost cannot be less than or equal to 0",
+            ),
+          );
+        }
       });
     });
   });
