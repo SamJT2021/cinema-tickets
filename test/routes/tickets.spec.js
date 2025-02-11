@@ -41,4 +41,45 @@ describe("POST /tickets/purchase", () => {
         done,
       );
   });
+
+  it("responds with InvalidPurchaseException error", (done) => {
+    request(app)
+      .post("/tickets/purchase")
+      .send({
+        accountId: 123456,
+        tickets: { ADULT: 1, CHILD: 1, INFANT: 2 },
+      })
+      .set("Accept", "application/json")
+      .expect("Content-Type", /json/)
+      .expect(
+        400,
+        {
+          status: "Failure",
+          code: 400,
+          message: "There must be at least 1 adult ticket per infant ticket",
+          name: "InvalidPurchaseException",
+        },
+        done,
+      );
+  });
+
+  it("responds with BadRequestError error", (done) => {
+    request(app)
+      .post("/tickets/purchase")
+      .send({
+        tickets: { ADULT: 1, CHILD: 1, INFANT: 2 },
+      })
+      .set("Accept", "application/json")
+      .expect("Content-Type", /json/)
+      .expect(
+        400,
+        {
+          status: "Failure",
+          code: 400,
+          message: "accountId is required",
+          name: "BadRequestError",
+        },
+        done,
+      );
+  });
 });

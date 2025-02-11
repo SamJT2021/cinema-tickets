@@ -1,4 +1,5 @@
 import { TICKET_TYPES, TICKET_PRICES } from "../../constants.js";
+import ValidationError from "./errors/ValidationError.js";
 
 export default class TicketTypeRequest {
   #type;
@@ -7,13 +8,13 @@ export default class TicketTypeRequest {
 
   constructor(type, noOfTickets) {
     if (!TICKET_TYPES.includes(type)) {
-      throw new TypeError(
+      throw new ValidationError(
         `Ticket type must be ${TICKET_TYPES.slice(0, -1).join(", ")}, or ${TICKET_TYPES.slice(-1)}`,
       );
     }
 
     if (!Number.isInteger(noOfTickets)) {
-      throw new TypeError("Number of tickets must be an integer");
+      throw new ValidationError("Number of tickets must be an integer");
     }
 
     this.#type = type;

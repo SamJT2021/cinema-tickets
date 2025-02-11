@@ -6,6 +6,7 @@ import TicketTypeRequest from "../../src/pairtest/lib/TicketTypeRequest.js";
 import InternalServerError from "../../src/pairtest/lib/errors/InternalServerError.js";
 import TicketPaymentService from "../../src/thirdparty/paymentgateway/TicketPaymentService.js";
 import SeatReservationService from "../../src/thirdparty/seatbooking/SeatReservationService.js";
+import ValidationError from "../../src/pairtest/lib/errors/ValidationError.js";
 
 const sandbox = sinon.createSandbox();
 
@@ -21,7 +22,7 @@ describe("TicketService", () => {
     it("should throw an error if accountId is invalid", () => {
       assert.throws(
         () => new TicketService("test", tickets),
-        TypeError,
+        ValidationError,
         "accountId must be an integer",
       );
     });

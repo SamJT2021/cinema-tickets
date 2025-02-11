@@ -1,13 +1,14 @@
 import { assert, expect } from "chai";
 
 import TicketTypeRequest from "../../src/pairtest/lib/TicketTypeRequest.js";
+import ValidationError from "../../src/pairtest/lib/errors/ValidationError.js";
 
 describe("TicketTypeRequest", () => {
   context("constructor", () => {
     it("should throw an error for invalid ticket type", () => {
       assert.throws(
         () => new TicketTypeRequest("SENIOR", 1),
-        TypeError,
+        ValidationError,
         "Ticket type must be ADULT, CHILD, or INFANT",
       );
     });
@@ -15,7 +16,7 @@ describe("TicketTypeRequest", () => {
     it("should throw an error for non-integer number of tickets - float", () => {
       assert.throws(
         () => new TicketTypeRequest("ADULT", 1.11111),
-        TypeError,
+        ValidationError,
         "Number of tickets must be an integer",
       );
     });
@@ -23,7 +24,7 @@ describe("TicketTypeRequest", () => {
     it("should throw an error for non-integer number of tickets - string", () => {
       assert.throws(
         () => new TicketTypeRequest("ADULT", "test"),
-        TypeError,
+        ValidationError,
         "Number of tickets must be an integer",
       );
     });

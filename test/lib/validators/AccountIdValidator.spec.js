@@ -1,13 +1,14 @@
 import { assert } from "chai";
 
 import AccountIdValidator from "../../../src/pairtest/lib/validators/AccountIdValidator.js";
+import ValidationError from "../../../src/pairtest/lib/errors/ValidationError.js";
 
 describe("AccountIdValidator", () => {
   describe("validateAccountId", () => {
     it("should throw an error if acountId is undefined", () => {
       assert.throws(
         () => AccountIdValidator.validateAccountId(),
-        TypeError,
+        ValidationError,
         "accountId is required",
       );
     });
@@ -15,7 +16,7 @@ describe("AccountIdValidator", () => {
     it("should throw an error if acountId is not a number", () => {
       assert.throws(
         () => AccountIdValidator.validateAccountId("test"),
-        TypeError,
+        ValidationError,
         "accountId must be an integer",
       );
     });
@@ -23,7 +24,7 @@ describe("AccountIdValidator", () => {
     it("should throw an error if acountId is a number as a string", () => {
       assert.throws(
         () => AccountIdValidator.validateAccountId("123456"),
-        TypeError,
+        ValidationError,
         "accountId must be an integer",
       );
     });
@@ -31,7 +32,7 @@ describe("AccountIdValidator", () => {
     it("should throw an error if acountId is a float", () => {
       assert.throws(
         () => AccountIdValidator.validateAccountId(1.23456),
-        TypeError,
+        ValidationError,
         "accountId must be an integer",
       );
     });
@@ -39,7 +40,7 @@ describe("AccountIdValidator", () => {
     it("should throw an error if acountId is 0", () => {
       assert.throws(
         () => AccountIdValidator.validateAccountId(0),
-        TypeError,
+        ValidationError,
         "accountId must be greater than 0",
       );
     });
@@ -47,7 +48,7 @@ describe("AccountIdValidator", () => {
     it("should throw an error if acountId is less than 0", () => {
       assert.throws(
         () => AccountIdValidator.validateAccountId(-1),
-        TypeError,
+        ValidationError,
         "accountId must be greater than 0",
       );
     });

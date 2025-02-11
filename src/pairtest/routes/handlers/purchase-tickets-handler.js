@@ -1,6 +1,12 @@
 import TicketService from "../../services/TicketService.js";
 import TicketTypeRequest from "../../lib/TicketTypeRequest.js";
 import { HTTP_STATUS_CODES } from "../../../constants.js";
+import TicketsRequestBodyValidator from "../../lib/validators/TicketsRequestBodyValidator.js";
+import { handleErrorResponse } from "../../lib/helpers/error-helpers.js";
+
+import InvalidPurchaseException from "../../lib/errors/InvalidPurchaseException.js";
+import ValidationError from "../../lib/errors/ValidationError.js";
+import BadRequestError from "../../lib/errors/BadRequestError.js";
 
 const { OK } = HTTP_STATUS_CODES;
 
@@ -8,7 +14,7 @@ async function purchaseTicketsHandler(req, res, next) {
   try {
     const { accountId, tickets } = req.body;
 
-    // TODO: validate tickets request body
+    TicketsRequestBodyValidator.validateTicketsRequest(tickets);
     const ticketTypeRequests = Object.entries(tickets).map(
       ([type, noOfTickets]) => new TicketTypeRequest(type, noOfTickets),
     );
@@ -22,7 +28,17 @@ async function purchaseTicketsHandler(req, res, next) {
       ...response,
     });
   } catch (error) {
-    // TODO: handle error
+    if (
+      error instanceof InvalidPurchaseException ||
+      error instanceof ValidationError
+    ) {
+      const formattedError =
+        error instanceof ValidationError
+          ? new BadRequestError(error.message)
+          : error;
+      return handleErrorResponse(formattedError, res);
+    }
+
     return next(error);
   }
 }
