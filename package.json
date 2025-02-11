@@ -9,6 +9,8 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
+    "docker:build": "docker build -t cinema-tickets .",
+    "docker:run": "docker run -p 3000:3000 cinema-tickets",
     "test:unit": "mocha --recursive test --exit",
     "test:coverage": "c8 --all npm run test:unit",
     "test:lint": "eslint .",

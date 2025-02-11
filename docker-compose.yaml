@@ -1,0 +1,11 @@
+services:
+  cinema-tickets:
+    build:
+      context: .
+    container_name: cinema-tickets
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      PORT: ${PORT}
+    ports:
+      - "3000:3000"
+    restart: always
