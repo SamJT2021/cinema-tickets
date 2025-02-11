@@ -1,5 +1,10 @@
 import sinon from "sinon";
-import { globalErrorHandler } from "../../src/pairtest/middleware/error-handler.js";
+import {
+  globalErrorHandler,
+  resourceNotFound,
+  invalidJSONHandler,
+} from "../../src/pairtest/middleware/error-handler.js";
+import ResourceNotFoundError from "../../src/pairtest/lib/errors/ResourceNotFoundError.js";
 
 const sandbox = sinon.createSandbox();
 
@@ -61,6 +66,57 @@ describe("Error Handler", () => {
       const error = undefined;
 
       globalErrorHandler(error, req, res, nextSpy);
+      sinon.assert.calledOnce(nextSpy);
+    });
+  });
+
+  context("resourceNotFound", () => {
+    it("should log error and return resource not found error", () => {
+      req.url = "/foo/bar";
+      req.method = "POST";
+
+      resourceNotFound(req, res, nextSpy);
+      sinon.assert.calledWith(
+        errorLoggerStub,
+        sinon.match.instanceOf(ResourceNotFoundError),
+      );
+      sinon.assert.calledWithExactly(statusStub, 404);
+      sinon.assert.calledWithExactly(jsonStub, {
+        status: "Failure",
+        code: 404,
+        message: "Resource Not Found",
+        name: "ResourceNotFoundError",
+        method: "POST",
+        url: "/foo/bar",
+      });
+    });
+  });
+
+  context("invalidJSONHandler", () => {
+    it("should log error and return Bad Request", () => {
+      const error = new SyntaxError("Unexpected String in JSON at position");
+      error.body = "test";
+      error.status = 400;
+      error.stack = "stack";
+
+      invalidJSONHandler(error, req, res, nextSpy);
+      sinon.assert.calledWithExactly(errorLoggerStub, "stack");
+      sinon.assert.calledWithExactly(statusStub, 400);
+    });
+
+    it("should call next with error", () => {
+      const error = new SyntaxError("Unexpected String in JSON at position");
+      error.body = "test";
+      error.stack = "stack";
+
+      invalidJSONHandler(error, req, res, nextSpy);
+      sinon.assert.calledWithExactly(nextSpy, error);
+    });
+
+    it("should call next without error", () => {
+      const error = undefined;
+
+      invalidJSONHandler(error, req, res, nextSpy);
       sinon.assert.calledOnce(nextSpy);
     });
   });

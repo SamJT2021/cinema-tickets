@@ -4,15 +4,20 @@ import "dotenv/config";
 
 import { ticketRoutes } from "./pairtest/routes/tickets.js";
 import { appLogger } from "./pairtest/middleware/app-logger.js";
-import { globalErrorHandler } from "./pairtest/middleware/error-handler.js";
+import {
+  globalErrorHandler,
+  resourceNotFound,
+  invalidJSONHandler,
+} from "./pairtest/middleware/error-handler.js";
 
 const app = express();
 app.use(appLogger);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(invalidJSONHandler);
 
 ticketRoutes(app);
 
-app.use(globalErrorHandler);
+app.use(globalErrorHandler, resourceNotFound);
 
 export default app;
