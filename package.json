@@ -7,6 +7,8 @@
   },
   "type": "module",
   "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
     "test:unit": "mocha --recursive test --exit",
     "test:coverage": "c8 --all npm run test:unit",
     "test:lint": "eslint .",
@@ -19,6 +21,12 @@
     "eslint": "^9.20.0",
     "husky": "^9.1.7",
     "mocha": "^11.1.0",
+    "nodemon": "^3.1.9",
     "sinon": "^19.0.2"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
   }
 }
