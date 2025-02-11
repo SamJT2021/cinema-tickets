@@ -25,14 +25,14 @@ export default class TicketService {
     this.#ticketTypeRequests = ticketTypeRequests;
   }
 
-  #getTotalNumberOfTickets() {
+  #getTotalTickets() {
     return this.#ticketTypeRequests.reduce(
       (accumulator, ticketType) => accumulator + ticketType.getNoOfTickets(),
       0,
     );
   }
 
-  #getIndividualTicketTotals() {
+  #getTicketTypeTotals() {
     return this.#ticketTypeRequests.reduce((accumulator, ticket) => {
       return Object.assign(accumulator, {
         [ticket.getTicketType()]: ticket.getNoOfTickets(),
@@ -47,6 +47,12 @@ export default class TicketService {
       0,
     );
 
+    this.#validateTotalCost(totalCost);
+
+    return totalCost;
+  }
+
+  #validateTotalCost(totalCost) {
     if (isNaN(totalCost)) {
       throw new InternalServerError("Total Cost must be a number");
     }
@@ -56,8 +62,6 @@ export default class TicketService {
         "Total Cost cannot be less than or equal to 0",
       );
     }
-
-    return totalCost;
   }
 
   #getTotalSeatsToReserve() {
@@ -70,8 +74,8 @@ export default class TicketService {
   }
 
   async purchaseTickets() {
-    const totalNoOfTickets = this.#getTotalNumberOfTickets();
-    const ticketsOverview = this.#getIndividualTicketTotals();
+    const totalNoOfTickets = this.#getTotalTickets();
+    const ticketsOverview = this.#getTicketTypeTotals();
     const totalCost = this.#getTotalCost();
     const totalSeats = this.#getTotalSeatsToReserve();
 

@@ -35,7 +35,7 @@ describe("TicketService", () => {
     });
   });
 
-  context("#getTotalNumberOfTickets", () => {
+  context("#getTotalTickets", () => {
     it("should calculate the total number of tickets", async () => {
       const ticketService = new TicketService(accountId, tickets);
       const result = await ticketService.purchaseTickets();
@@ -43,7 +43,7 @@ describe("TicketService", () => {
     });
   });
 
-  context("#getIndividualTicketTotals", () => {
+  context("#getTicketTypeTotals", () => {
     it("should return total number of tickets for each type", async () => {
       const ticketService = new TicketService(accountId, tickets);
       const result = await ticketService.purchaseTickets();
@@ -71,60 +71,60 @@ describe("TicketService", () => {
       const result = await ticketService.purchaseTickets();
       expect(result.totalCost).to.be.eql(65);
     });
+  });
 
-    context("Error handling", () => {
-      let getTicketPriceStub;
+  context("#validateTotalCost", () => {
+    let getTicketPriceStub;
 
-      beforeEach(() => {
-        getTicketPriceStub = sandbox.stub(
-          TicketTypeRequest.prototype,
-          "getTicketPrice",
+    beforeEach(() => {
+      getTicketPriceStub = sandbox.stub(
+        TicketTypeRequest.prototype,
+        "getTicketPrice",
+      );
+    });
+
+    afterEach(() => {
+      sandbox.restore();
+    });
+
+    it("should throw an error if total cost is not a number", async () => {
+      getTicketPriceStub.returns("test");
+      const ticketService = new TicketService(accountId, tickets);
+      try {
+        await ticketService.purchaseTickets();
+      } catch (error) {
+        expect(error).to.be.eql(
+          new InternalServerError("Total Cost must be a number"),
         );
-      });
+      }
+    });
 
-      afterEach(() => {
-        sandbox.restore();
-      });
+    it("should throw an error if total cost is 0", async () => {
+      getTicketPriceStub.returns(0);
+      const ticketService = new TicketService(accountId, tickets);
+      try {
+        await ticketService.purchaseTickets();
+      } catch (error) {
+        expect(error).to.be.eql(
+          new InternalServerError(
+            "Total Cost cannot be less than or equal to 0",
+          ),
+        );
+      }
+    });
 
-      it("should throw an error if total cost is not a number", async () => {
-        getTicketPriceStub.returns("test");
-        const ticketService = new TicketService(accountId, tickets);
-        try {
-          await ticketService.purchaseTickets();
-        } catch (error) {
-          expect(error).to.be.eql(
-            new InternalServerError("Total Cost must be a number"),
-          );
-        }
-      });
-
-      it("should throw an error if total cost is 0", async () => {
-        getTicketPriceStub.returns(0);
-        const ticketService = new TicketService(accountId, tickets);
-        try {
-          await ticketService.purchaseTickets();
-        } catch (error) {
-          expect(error).to.be.eql(
-            new InternalServerError(
-              "Total Cost cannot be less than or equal to 0",
-            ),
-          );
-        }
-      });
-
-      it("should throw an error if total cost is less than 0", async () => {
-        getTicketPriceStub.returns(-1);
-        const ticketService = new TicketService(accountId, tickets);
-        try {
-          await ticketService.purchaseTickets();
-        } catch (error) {
-          expect(error).to.be.eql(
-            new InternalServerError(
-              "Total Cost cannot be less than or equal to 0",
-            ),
-          );
-        }
-      });
+    it("should throw an error if total cost is less than 0", async () => {
+      getTicketPriceStub.returns(-1);
+      const ticketService = new TicketService(accountId, tickets);
+      try {
+        await ticketService.purchaseTickets();
+      } catch (error) {
+        expect(error).to.be.eql(
+          new InternalServerError(
+            "Total Cost cannot be less than or equal to 0",
+          ),
+        );
+      }
     });
   });
 
