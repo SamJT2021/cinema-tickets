@@ -3,12 +3,18 @@ import sinon from "sinon";
 
 import TicketPaymentService from "../../src/thirdparty/paymentgateway/TicketPaymentService.js";
 import SeatReservationService from "../../src/thirdparty/seatbooking/SeatReservationService.js";
+import TicketService from "../../src/pairtest/services/TicketService.js";
+
 import app from "../../src/app.js";
+import InternalServerError from "../../src/pairtest/lib/errors/InternalServerError.js";
+
+import { overrideAppLogger } from "../test-helpers/middleware-overrides.js";
 
 const sandbox = sinon.createSandbox();
 
 describe("POST /tickets/purchase", () => {
   beforeEach(() => {
+    overrideAppLogger(app);
     sandbox.stub(TicketPaymentService.prototype, "makePayment").returns(true);
     sandbox.stub(SeatReservationService.prototype, "reserveSeat").returns(true);
   });
@@ -63,11 +69,11 @@ describe("POST /tickets/purchase", () => {
       );
   });
 
-  it("responds with BadRequestError error", (done) => {
+  it("responds with BadRequestError", (done) => {
     request(app)
       .post("/tickets/purchase")
       .send({
-        tickets: { ADULT: 1, CHILD: 1, INFANT: 2 },
+        tickets: { ADULT: 1, CHILD: 1, INFANT: 0 },
       })
       .set("Accept", "application/json")
       .expect("Content-Type", /json/)
@@ -78,6 +84,30 @@ describe("POST /tickets/purchase", () => {
           code: 400,
           message: "accountId is required",
           name: "BadRequestError",
+        },
+        done,
+      );
+  });
+
+  it("responds with InternalServerError", (done) => {
+    sandbox
+      .stub(TicketService.prototype, "purchaseTickets")
+      .throws(new InternalServerError("Error"));
+    request(app)
+      .post("/tickets/purchase")
+      .send({
+        accountId: 123456,
+        tickets: { ADULT: 1, CHILD: 1, INFANT: 0 },
+      })
+      .set("Accept", "application/json")
+      .expect("Content-Type", /json/)
+      .expect(
+        500,
+        {
+          status: "Failure",
+          code: 500,
+          message: "Internal Server Error",
+          name: "InternalServerError",
         },
         done,
       );
