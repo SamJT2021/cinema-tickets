@@ -3,12 +3,22 @@ import TicketTypeRequest from "../lib/TicketTypeRequest.js";
 import PurchaseTicketsValidator from "../lib/validators/PurchaseTicketsValidator.js";
 import TicketPaymentService from "../../thirdparty/paymentgateway/TicketPaymentService.js";
 import SeatReservationService from "../../thirdparty/seatbooking/SeatReservationService.js";
+import AccountIdValidator from "../lib/validators/AccountIdValidator.js";
 
 export default class TicketService {
   #accountId;
   #ticketTypeRequests;
 
   constructor(accountId, ticketTypeRequests) {
+    this.#validateInputs(accountId, ticketTypeRequests);
+
+    this.#accountId = accountId;
+    this.#ticketTypeRequests = ticketTypeRequests;
+  }
+
+  #validateInputs(accountId, ticketTypeRequests) {
+    AccountIdValidator.validateAccountId(accountId);
+
     if (!(ticketTypeRequests instanceof Array)) {
       throw new InternalServerError("tickets must be an Array");
     }
@@ -20,9 +30,6 @@ export default class TicketService {
         "Each ticket must be an instance of TicketTypeRequest",
       );
     }
-
-    this.#accountId = accountId;
-    this.#ticketTypeRequests = ticketTypeRequests;
   }
 
   #getTotalTickets() {

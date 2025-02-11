@@ -18,6 +18,14 @@ describe("TicketService", () => {
   ];
 
   context("constructor", () => {
+    it("should throw an error if accountId is invalid", () => {
+      assert.throws(
+        () => new TicketService("test", tickets),
+        TypeError,
+        "accountId must be an integer",
+      );
+    });
+
     it("should throw an error if tickets are not an Array", () => {
       assert.throws(() => {
         new TicketService(accountId, { ADULT: 2, CHILD: 1, INFANT: 1 }),
