@@ -24,7 +24,8 @@
     "husky": "^9.1.7",
     "mocha": "^11.1.0",
     "nodemon": "^3.1.9",
-    "sinon": "^19.0.2"
+    "sinon": "^19.0.2",
+    "supertest": "^7.0.0"
   },
   "dependencies": {
     "body-parser": "^1.20.3",

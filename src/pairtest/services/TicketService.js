@@ -100,6 +100,7 @@ export default class TicketService {
       totalNoOfTickets,
       ticketsOverview,
       totalCost,
+      currency: "GBP",
       totalSeats,
     };
   }

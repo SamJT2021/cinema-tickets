@@ -170,6 +170,7 @@ describe("TicketService", () => {
         totalNoOfTickets: 4,
         ticketsOverview: { ADULT: 2, CHILD: 1, INFANT: 1 },
         totalCost: 65,
+        currency: "GBP",
         totalSeats: 3,
       });
     });
