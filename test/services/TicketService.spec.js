@@ -31,7 +31,7 @@ describe("TicketService", () => {
       assert.throws(() => {
         new TicketService(accountId, { ADULT: 2, CHILD: 1, INFANT: 1 }),
           InternalServerError,
-          "tickets must be an Array";
+          "ticketTypeRequests must be an Array";
       });
     });
 

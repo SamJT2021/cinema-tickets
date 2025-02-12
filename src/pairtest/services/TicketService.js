@@ -20,7 +20,7 @@ export default class TicketService {
     AccountIdValidator.validateAccountId(accountId);
 
     if (!(ticketTypeRequests instanceof Array)) {
-      throw new InternalServerError("tickets must be an Array");
+      throw new InternalServerError("ticketTypeRequests must be an Array");
     }
 
     if (
@@ -93,6 +93,8 @@ export default class TicketService {
 
     const ticketPaymentService = new TicketPaymentService();
     const seatReservationService = new SeatReservationService();
+
+    // Although thirdparty code is not asynchronous for this test, added await as a best practice.
     await ticketPaymentService.makePayment(this.#accountId, totalCost);
     await seatReservationService.reserveSeat(this.#accountId, totalSeats);
 
