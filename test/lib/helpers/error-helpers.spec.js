@@ -41,5 +41,26 @@ describe("Error Helpers", () => {
         message: "accountId is required",
       });
     });
+
+    it("should return error response with optional error parameters", () => {
+      const error = {
+        code: 404,
+        name: "ResourceNotFoundError",
+        message: "Resource Not Found",
+        method: "POST",
+        url: "/tickets/urchase",
+      };
+
+      handleErrorResponse(error, res);
+      sinon.assert.calledWithExactly(statusStub, 404);
+      sinon.assert.calledWithExactly(jsonStub, {
+        status: "Failure",
+        code: 404,
+        name: "ResourceNotFoundError",
+        message: "Resource Not Found",
+        method: "POST",
+        url: "/tickets/urchase",
+      });
+    });
   });
 });

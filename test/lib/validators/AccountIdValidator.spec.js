@@ -52,5 +52,9 @@ describe("AccountIdValidator", () => {
         "accountId must be greater than 0",
       );
     });
+
+    it("should not throw an error for a valid acountId", () => {
+      assert.doesNotThrow(() => AccountIdValidator.validateAccountId(123456));
+    });
   });
 });
